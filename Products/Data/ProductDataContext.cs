@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DataEntities;
 using Microsoft.EntityFrameworkCore;
-using eShopLite.Data;
-using System.Reflection.Emit;
 
-namespace eShopLite.API.Data;
+namespace Products.Data;
 
-public class eShopLiteAPIContext : DbContext
+public class ProductDataContext : DbContext
 {
-    public eShopLiteAPIContext (DbContextOptions<eShopLiteAPIContext> options)
+    public ProductDataContext (DbContextOptions<ProductDataContext> options)
         : base(options)
     {
     }
@@ -25,7 +20,7 @@ public static class Extensions
         using var scope = host.Services.CreateScope();
 
         var services = scope.ServiceProvider;
-        var context = services.GetRequiredService<eShopLiteAPIContext>();
+        var context = services.GetRequiredService<ProductDataContext>();
         context.Database.EnsureCreated();
         DbInitializer.Initialize(context);
     }
@@ -34,7 +29,7 @@ public static class Extensions
 
 public static class DbInitializer
 {
-    public static void Initialize(eShopLiteAPIContext context)
+    public static void Initialize(ProductDataContext context)
     {
         if (context.Product.Any())
             return;

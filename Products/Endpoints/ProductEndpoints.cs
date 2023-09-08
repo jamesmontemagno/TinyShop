@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using eShopLite.API.Data;
-using eShopLite.Data;
-namespace eShopLite.API;
+﻿using DataEntities;
+using Microsoft.EntityFrameworkCore;
+using Products.Data;
+
+namespace Products.Endpoints;
 
 public static class ProductEndpoints
 {
@@ -9,14 +10,14 @@ public static class ProductEndpoints
     {
         var group = routes.MapGroup("/api/Product");
 
-        group.MapGet("/", async (eShopLiteAPIContext db) =>
+        group.MapGet("/", async (ProductDataContext db) =>
         {
             return await db.Product.ToListAsync();
         })
         .WithName("GetAllProducts")
         .Produces<List<Product>>(StatusCodes.Status200OK);
 
-        group.MapGet("/{id}", async  (int id, eShopLiteAPIContext db) =>
+        group.MapGet("/{id}", async  (int id, ProductDataContext db) =>
         {
             return await db.Product.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -28,7 +29,7 @@ public static class ProductEndpoints
         .Produces<Product>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
 
-        group.MapPut("/{id}", async  (int id, Product product, eShopLiteAPIContext db) =>
+        group.MapPut("/{id}", async  (int id, Product product, ProductDataContext db) =>
         {
             var affected = await db.Product
                 .Where(model => model.Id == id)
@@ -46,7 +47,7 @@ public static class ProductEndpoints
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status204NoContent);
 
-        group.MapPost("/", async (Product product, eShopLiteAPIContext db) =>
+        group.MapPost("/", async (Product product, ProductDataContext db) =>
         {
             db.Product.Add(product);
             await db.SaveChangesAsync();
@@ -55,7 +56,7 @@ public static class ProductEndpoints
         .WithName("CreateProduct")
         .Produces<Product>(StatusCodes.Status201Created);
 
-        group.MapDelete("/{id}", async  (int id, eShopLiteAPIContext db) =>
+        group.MapDelete("/{id}", async  (int id, ProductDataContext db) =>
         {
             var affected = await db.Product
                 .Where(model => model.Id == id)
