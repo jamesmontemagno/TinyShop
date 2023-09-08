@@ -1,0 +1,6 @@
+@eShopLite.API_HostAddress = http://localhost:5228
+
+GET {{eShopLite.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
