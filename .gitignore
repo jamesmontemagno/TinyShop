@@ -361,6 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/eShopLite.API/Database.db
-/eShopLite.API/Database.db-shm
-/eShopLite.API/Database.db-wal
+/Products/Database.db
+/Products/Database.db-shm
+/Products/Database.db-wal
