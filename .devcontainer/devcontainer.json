@@ -4,12 +4,17 @@
 	"name": "eShopLite",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	//"image": "mcr.microsoft.com/devcontainers/dotnet:0-8.0-preview",
-  "build": {
-        // Path is relative to the devcontainer.json file.
-        "dockerfile": "Dockerfile"
-  },
+	"image": "mcr.microsoft.com/dotnet/sdk:8.0-preview",
+  	//"build": {
+        //	// Path is relative to the devcontainer.json file.
+        // 	"dockerfile": "Dockerfile"
+  	//},
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		}
+	},
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -17,7 +22,8 @@
 		"vscode": {
 			"settings": {},
 			"extensions": [
-				"ms-dotnettools.csdevkit"
+				"ms-dotnettools.csharp@prerelease",
+				"ms-dotnettools.csdevkit@prerelease"
 			]
 		}
 	}
