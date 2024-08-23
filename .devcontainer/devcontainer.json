@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-	"name": "eShopLite",
+	"name": "TinyShop",
 	//"image": "mcr.microsoft.com/devcontainers/dotnet:0-8.0",
 	"image": "mcr.microsoft.com/dotnet/sdk:8.0",
 	"forwardPorts": [5158,5228,37477,38557],

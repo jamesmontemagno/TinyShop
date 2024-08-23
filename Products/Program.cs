@@ -31,16 +31,14 @@ app.Run();
 
 public class RandomFailureMiddleware : IMiddleware
 {
-	private Random _rand;
-
-	public RandomFailureMiddleware()
-	{
-		_rand = new Random();
-	}
-
 	public Task InvokeAsync(HttpContext context, RequestDelegate next)
 	{
-		if (_rand.NextDouble() >= 0.5)
+		var path = context.Request.Path.Value;
+
+		if (path is null || !path.Contains("api/Product", StringComparison.InvariantCultureIgnoreCase))
+			return next(context);
+
+		if (Random.Shared.NextDouble() >= 0.6)
 		{
 			throw new Exception("Computer says no.");
 		}

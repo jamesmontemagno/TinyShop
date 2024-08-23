@@ -4,11 +4,11 @@ This is a demo repo for a tiny little commerce website that displays sporting go
 
 
 Demo flow:
-- Run app as is
+- Run app as is (configur multi-deploy)
 - Configure .NET Aspire in backend
 - Show dashboard
 - Show resiliency
-- Show test
+- Show health check
 - Add .NET Aspire to frontend
 - Configure service discovery
 - Add redis cache
