@@ -1,0 +1,22 @@
+@using DataEntities
+
+<div class="product-card">
+    <div class="product-image">
+        <img src="@ImageUrl" alt="@Product.Name" />
+    </div>
+    <div class="product-info">
+        <h3 class="product-name">@Product.Name</h3>
+        <p class="product-description">@Product.Description</p>
+        <p class="product-price">@Product.Price.ToString("C")</p>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Product Product { get; set; } = default!;
+
+    [Parameter]
+    public string? ImagePrefix { get; set; }
+
+    private string ImageUrl => $"https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/{Product.ImageUrl}";
+}

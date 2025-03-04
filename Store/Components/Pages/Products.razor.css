@@ -1,0 +1,65 @@
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.products-container {
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+/* Use ::deep to style child components */
+::deep .product-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+::deep .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+::deep .product-image {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+}
+
+::deep .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+::deep .product-info {
+    padding: 1rem;
+}
+
+::deep .product-name {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0;
+}
+
+::deep .product-description {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+}
+
+::deep .product-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2b5797;
+    margin: 0;
+}
