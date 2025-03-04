@@ -1,23 +1,28 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-	"name": "TinyShop",
-	//"image": "mcr.microsoft.com/devcontainers/dotnet:0-8.0",
-	"image": "mcr.microsoft.com/dotnet/sdk:8.0",
-	"forwardPorts": [5158,5228,37477,38557],
-	"features": {
-		"ghcr.io/devcontainers/features/powershell:1": {
-			"version": "latest"
-		}
-	},
-	"customizations": {
-		// Configure properties specific to VS Code.
-		"vscode": {
-			"settings": {},
-			"extensions": [
-				"ms-dotnettools.csharp@prerelease",
-				"ms-dotnettools.csdevkit@prerelease"
-			]
-		}
-	}
+    "name": "TinyShop",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:dev-9.0-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/azure-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/powershell:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csdevkit",
+                "GitHub.copilot-chat",
+                "GitHub.copilot"
+            ],
+            "settings": {
+                "remote.autoForwardPorts": true,
+                "remote.autoForwardPortsSource": "hybrid",
+                "remote.otherPortsAttributes": {
+                    "onAutoForward": "ignore"
+                }
+            }
+        }
+    },
+    "onCreateCommand": "dotnet new install Aspire.ProjectTemplates::*-*",
+    "postStartCommand": "dotnet dev-certs https --trust",
+    "forwardPorts": []
 }
