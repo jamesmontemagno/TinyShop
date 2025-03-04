@@ -6,10 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<AdminAuthService>();
 builder.Services.AddHttpClient<ProductService>(c =>
 {
     var url = builder.Configuration["ProductEndpoint"] ?? throw new InvalidOperationException("ProductEndpoint is not set");
-
     c.BaseAddress = new(url);
 });
 

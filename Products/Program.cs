@@ -23,7 +23,7 @@ app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-app.UseMiddleware<RandomFailureMiddleware>();
+//app.UseMiddleware<RandomFailureMiddleware>();
 
 app.MapProductEndpoints();
 

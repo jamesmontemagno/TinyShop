@@ -1,0 +1,219 @@
+@page "/admin"
+@using Store.Services
+@using DataEntities
+@inject AdminAuthService AuthService
+@inject ProductService ProductService
+@rendermode InteractiveServer
+
+<div class="container mt-4">
+    @if (!AuthService.IsAuthenticated)
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Admin Login</h3>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" @bind="password" @bind:event="oninput" @onkeypress="HandleKeyPress" />
+                        </div>
+                        <button class="btn btn-primary w-100" @onclick="HandleLogin">Login</button>
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger mt-3">@errorMessage</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+            <h2>Product Management</h2>
+            <button class="btn btn-danger" @onclick="HandleLogout">Logout</button>
+        </div>
+
+        @if (isEditing)
+        {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>@(editingProduct.Id == 0 ? "Create New Product" : "Edit Product")</h4>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input class="form-control" @bind="editingProduct.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" @bind="editingProduct.Description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Price</label>
+                        <input type="number" step="0.01" class="form-control" @bind="editingProduct.Price" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image URL</label>
+                        <input class="form-control" @bind="editingProduct.ImageUrl" />
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" @onclick="SaveProduct">Save</button>
+                        <button class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-primary mb-4" @onclick="CreateNew">Add New Product</button>
+        }
+
+        @if (products == null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in products)
+                        {
+                            <tr>
+                                <td>@product.Id</td>
+                                <td>@product.Name</td>
+                                <td>@product.Description</td>
+                                <td>@product.Price.ToString("C")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                    {
+                                        <img src="@FormatImageUrl(product.ImageUrl)" style="max-height: 50px;" alt="@product.Name" />
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary me-2" @onclick="() => EditProduct(product)">Edit</button>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteProduct(product.Id)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private string password = "";
+    private string errorMessage = "";
+    private List<Product>? products;
+    private bool isEditing = false;
+    private Product editingProduct = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.IsAuthenticated)
+        {
+            await LoadProducts();
+        }
+    }
+
+    private async Task LoadProducts()
+    {
+        products = await ProductService.GetProducts();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await HandleLogin();
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        if (AuthService.Login(password))
+        {
+            errorMessage = "";
+            await LoadProducts();
+            StateHasChanged();
+        }
+        else
+        {
+            errorMessage = "Invalid password";
+            StateHasChanged();
+        }
+    }
+
+    private void HandleLogout()
+    {
+        AuthService.Logout();
+        password = "";
+        StateHasChanged();
+    }
+
+    private void CreateNew()
+    {
+        editingProduct = new Product();
+        isEditing = true;
+    }
+
+    private void EditProduct(Product product)
+    {
+        editingProduct = new Product
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            ImageUrl = product.ImageUrl
+        };
+        isEditing = true;
+    }
+
+    private async Task SaveProduct()
+    {
+        if (editingProduct.Id == 0)
+        {
+            await ProductService.CreateProduct(editingProduct);
+        }
+        else
+        {
+            await ProductService.UpdateProduct(editingProduct.Id, editingProduct);
+        }
+        
+        await LoadProducts();
+        isEditing = false;
+        editingProduct = new();
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        editingProduct = new();
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        if (await ProductService.DeleteProduct(id))
+        {
+            await LoadProducts();
+        }
+    }
+
+    private string FormatImageUrl(string? imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl)) return string.Empty;
+        return $"https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/{imageUrl}";
+    }
+}
