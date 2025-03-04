@@ -16,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyShop.AppHost", "TinyShop.AppHost\TinyShop.AppHost.csproj", "{3417F185-A750-4C2C-A505-8E927428CF78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyShop.ServiceDefaults", "TinyShop.ServiceDefaults\TinyShop.ServiceDefaults.csproj", "{3F03DD6D-9282-4E09-BF05-DFCB0D7F1375}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +38,14 @@ Global
 		{2E156904-6754-43F5-8B27-9B9D6479D9FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E156904-6754-43F5-8B27-9B9D6479D9FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E156904-6754-43F5-8B27-9B9D6479D9FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3417F185-A750-4C2C-A505-8E927428CF78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3417F185-A750-4C2C-A505-8E927428CF78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3417F185-A750-4C2C-A505-8E927428CF78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3417F185-A750-4C2C-A505-8E927428CF78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F03DD6D-9282-4E09-BF05-DFCB0D7F1375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F03DD6D-9282-4E09-BF05-DFCB0D7F1375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F03DD6D-9282-4E09-BF05-DFCB0D7F1375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F03DD6D-9282-4E09-BF05-DFCB0D7F1375}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

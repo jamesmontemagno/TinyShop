@@ -5,6 +5,9 @@ using Products.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
+builder.AddRedisOutputCache("redis");
 
 // Add services to the container.
 builder.Services.AddSingleton<RandomFailureMiddleware>();
@@ -16,11 +19,15 @@ builder.Services.AddDbContext<ProductDataContext>(options =>
 // Add services to the container.
 var app = builder.Build();
 
+app.MapDefaultEndpoints();
+
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 app.UseMiddleware<RandomFailureMiddleware>();
 
 app.MapProductEndpoints();
+
+app.UseOutputCache();
 
 app.UseStaticFiles();
 
