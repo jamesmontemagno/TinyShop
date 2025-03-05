@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Products.Data;
 using Products.Endpoints;
-
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
