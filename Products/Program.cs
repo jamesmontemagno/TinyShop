@@ -28,7 +28,7 @@ app.CreateDbIfNotExists();
 
 app.Run();
 
-
+[DebuggerStepThrough]
 public class RandomFailureMiddleware : IMiddleware
 {
 	public Task InvokeAsync(HttpContext context, RequestDelegate next)
