@@ -1,121 +1,74 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @using Microsoft.Extensions.AI
-@using System.Text.RegularExpressions
-@inject HttpClient Http
+@using Store.Services
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@inject ProductService ProductService
 @inject IChatClient ChatClient
 
-<PageTitle>TinyShop Chat</PageTitle>
+<h1>🛍️ TinyShop Chat</h1>
 
-<div class="container-fluid d-flex flex-column" style="height: 94vh; padding-bottom: 20px;">
-    <div class="row mb-3">
-        <div class="col">
-            <h1>TinyShop Chat Assistant</h1>
-        </div>
-    </div>
-
-    <div class="row flex-grow-1">
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-body d-flex flex-column h-100">
-                    <div class="chat-messages overflow-auto mb-3" style="flex: 1 1 0; min-height: 0; border: 1px solid #ccc; padding: 10px;">
-                        @foreach (var message in chatMessages)
-                        {
-                            <div class="@(message.Role == ChatRole.Assistant ? "text-start" : "text-end")">
-                                <span class="badge @(message.Role == ChatRole.Assistant ? "bg-secondary" : "bg-primary")">
-                                    @(message.Role == ChatRole.Assistant ? "Assistant" : "You")
-                                </span>
-                                <div class="mb-2 p-2 @(message.Role == ChatRole.Assistant ? "bg-light" : "bg-info text-white")" 
-                                     style="border-radius: 10px; display: inline-block; max-width: 70%;">
-                                    @((MarkupString)FormatMessageText(message.Text))
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="input-group mt-auto">
-                        <input type="text" class="form-control" placeholder="Ask about our products..." 
-                               @bind="userMessage" @bind:event="oninput" @onkeypress="HandleKeyPress" />
-                        <button class="btn btn-primary" disabled="@isChatProcessing" @onclick="SendMessage">
-                            @if (isChatProcessing)
-                            {
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            }
-                            else
-                            {
-                                <span>Send</span>
-                            }
-                        </button>
-                    </div>
+<section>
+    <header>💬 Product Expert</header>
+    <article>
+        <div id="messages">
+            @foreach (var message in messages)
+            {
+                <div class="message @message.Role.ToString().ToLower()">
+                    <span>@(message.Role == ChatRole.Assistant ? "🤖" : "👤")</span>
+                    <p>@((MarkupString)(message.Text ?? ""))</p>
                 </div>
-            </div>
+            }
         </div>
-    </div>
-</div>
+        <footer>
+            <input placeholder="Ask about our products..." @bind="input" @bind:event="oninput"
+                @onkeypress="HandleKeyPress" />
+            <button @onclick="Send" disabled="@isProcessing">
+                Send
+            </button>
+        </footer>
+    </article>
+</section>
 
 @code {
-    private List<ChatMessage> chatMessages = new();
-    private string? userMessage;
-    private bool isChatProcessing = false;
-    private string? productJson;
+    private List<ChatMessage> messages = new();
+    private string? input;
+    private bool isProcessing;
 
-    private string FormatMessageText(string text)
+    protected override void OnInitialized()
     {
-        if (string.IsNullOrEmpty(text)) return string.Empty;
-        
-        // Simple markdown formatting
-        text = Regex.Replace(text, @"\*\*(.*?)\*\*", "<strong>$1</strong>");
-        text = text.Replace("\n", "<br>");
-        text = Regex.Replace(text, @"!\[(.*?)\]\((product\d+\.png)\)", 
-            "<img src=\"https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/$2\" alt=\"$1\" style=\"max-height: 80px;\">");
-        
-        return text;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try {
-            var response = await Http.GetAsync("https://localhost:7130/api/Product");
-            productJson = await response.Content.ReadAsStringAsync();
-            chatMessages.Add(new ChatMessage(ChatRole.Assistant, "Hello! Ask me about our outdoor products!"));
-        }
-        catch
-        {
-            chatMessages.Add(new ChatMessage(ChatRole.Assistant, "Unable to load product data. Please try again later."));
-        }
-    }
-
-    private async Task SendMessage()
-    {
-        if (string.IsNullOrWhiteSpace(userMessage)) return;
-
-        isChatProcessing = true;
-        chatMessages.Add(new ChatMessage(ChatRole.User, userMessage));
-        userMessage = "";
-
-        try
-        {
-            var messages = new List<ChatMessage>
-            {
-                new ChatMessage(ChatRole.System, $"You are a TinyShop assistant helping customers find outdoor products. Always include product images in your responses by using markdown image syntax ![Product Name](productX.png) where X is the product number. Products: {productJson}")
-            };
-            
-            messages.AddRange(chatMessages);
-            var response = await ChatClient.GetResponseAsync(messages);
-            
-            chatMessages.Add(new ChatMessage(ChatRole.Assistant, 
-                response?.Message?.Text ?? "Sorry, I couldn't process that request."));
-        }
-        catch
-        {
-            chatMessages.Add(new ChatMessage(ChatRole.Assistant, "Sorry, I'm having trouble processing your request."));
-        }
-        
-        isChatProcessing = false;
+        messages.Add(new ChatMessage(ChatRole.Assistant, "Hello! Ask me about our outdoor products!"));
     }
 
     private async Task HandleKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter" && !isChatProcessing)
-            await SendMessage();
+        if (e.Key == "Enter" && !isProcessing)
+            await Send();
+    }
+
+    private async Task Send()
+    {
+        if (string.IsNullOrWhiteSpace(input)) return;
+
+        isProcessing = true;
+        messages.Add(new ChatMessage(ChatRole.User, input));
+        input = "";
+
+        var productJson = await ProductService.GetProductsJson();
+        var systemPrompt = @"You are a TinyShop assistant helping customers find outdoor products.
+Use emojis and HTML with Bootstrap classes in your responses. Please convert any Markdown to HTML. Include product
+images using full URLs like
+https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/product1.png
+and keep them small. Use media cards where possible.
+Products: " + productJson;
+
+        var allMessages = new List<ChatMessage> { new ChatMessage(ChatRole.System, systemPrompt) };
+        allMessages.AddRange(messages);
+        var response = await ChatClient.GetResponseAsync(allMessages);
+
+        messages.Add(new ChatMessage(ChatRole.Assistant, response?.Message?.Text ?? "Sorry, something went wrong"));
+        isProcessing = false;
+        StateHasChanged();
     }
 }

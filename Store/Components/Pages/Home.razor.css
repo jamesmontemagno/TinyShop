@@ -1,0 +1,193 @@
+section {
+    position: fixed;
+    top: 4rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
+
+h1 {
+    padding: 0.5rem 1rem;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+header {
+    padding: 1rem;
+    background: var(--bs-primary);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+    z-index: 1;
+}
+
+article {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.message {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 85%;
+    align-items: start;
+    margin-bottom: .5rem;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+}
+
+.message span {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.message.assistant span {
+    background: var(--bs-primary);
+    color: white;
+}
+
+.message.user span {
+    background: var(--bs-info);
+    color: white;
+}
+
+.message p {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    line-height: 1.4;
+    max-width: 75%;
+}
+
+.message.assistant p {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-bottom-left-radius: 0.25rem;
+    border-top-left-radius: 0;
+}
+
+.message.user p {
+    background: var(--bs-primary);
+    color: white;
+    border-bottom-right-radius: 0.25rem;
+    border-top-right-radius: 0;
+}
+
+footer {
+    padding: 1rem;
+    background: white;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    gap: 0.75rem;
+    position: sticky;
+    bottom: 0;
+}
+
+footer input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out;
+}
+
+footer input:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+footer button {
+    padding: 0.75rem 1.5rem;
+    background: var(--bs-primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    min-width: 5rem;
+}
+
+footer button:hover:not(:disabled) {
+    background: var(--bs-primary-dark, #0a58ca);
+}
+
+footer button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+img {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+/* Bootstrap card styling for product cards in chat */
+.card {
+    margin: 0.5rem 0;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.card img {
+    margin: 0;
+    border-radius: 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Style for the spinner when sending messages */
+button:disabled::after {
+    content: "...";
+    animation: ellipsis 1.5s infinite;
+}
+
+@keyframes ellipsis {
+    0% {
+        content: ".";
+    }
+
+    33% {
+        content: "..";
+    }
+
+    66% {
+        content: "...";
+    }
+}

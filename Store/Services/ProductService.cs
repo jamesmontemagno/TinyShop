@@ -10,21 +10,20 @@ public class ProductService
     {
         this.httpClient = httpClient;
     }
+
     public async Task<List<Product>> GetProducts()
     {
-        List<Product>? products = null;
+        var json = await GetProductsJson();
+        return JsonSerializer.Deserialize(json, ProductSerializerContext.Default.ListProduct) ?? new List<Product>();
+    }
+
+    public async Task<string> GetProductsJson()
+    {
         var response = await httpClient.GetAsync("/api/Product");
         if (response.IsSuccessStatusCode)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            products = await response.Content.ReadFromJsonAsync(ProductSerializerContext.Default.ListProduct);
+            return await response.Content.ReadAsStringAsync();
         }
-
-        return products ?? new List<Product>();
+        return "[]";
     }
-    
 }
