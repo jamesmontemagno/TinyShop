@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Products.Data;
 using Products.Endpoints;
-
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +28,7 @@ app.CreateDbIfNotExists();
 
 app.Run();
 
-
+[DebuggerStepThrough]
 public class RandomFailureMiddleware : IMiddleware
 {
 	public Task InvokeAsync(HttpContext context, RequestDelegate next)
