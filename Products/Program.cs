@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Products.Data;
 using Products.Endpoints;
-
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +35,7 @@ app.CreateDbIfNotExists();
 
 app.Run();
 
-
+[DebuggerStepThrough]
 public class RandomFailureMiddleware : IMiddleware
 {
 	public Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -45,7 +45,7 @@ public class RandomFailureMiddleware : IMiddleware
 		if (path is null || !path.Contains("api/Product", StringComparison.InvariantCultureIgnoreCase))
 			return next(context);
 
-		if (Random.Shared.NextDouble() >= 0.6)
+		if (Random.Shared.NextDouble() >= 1.0)
 		{
 			throw new Exception("Computer says no.");
 		}
