@@ -1,13 +1,15 @@
 ﻿using DataEntities;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
 using Products.Data;
+using System.Text.Json;
 
 namespace Products.Endpoints;
 
 public static class ProductEndpoints
 {
-    public static void MapProductEndpoints (this IEndpointRouteBuilder routes)
+    public static void MapProductEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/api/Product");
 
@@ -18,7 +20,7 @@ public static class ProductEndpoints
         .WithName("GetAllProducts")
         .Produces<List<Product>>(StatusCodes.Status200OK);
 
-        group.MapGet("/{id}", async  (int id, ProductDataContext db) =>
+        group.MapGet("/{id}", async (int id, ProductDataContext db) =>
         {
             return await db.Product.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -30,7 +32,7 @@ public static class ProductEndpoints
         .Produces<Product>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
 
-        group.MapPut("/{id}", async  (int id, Product product, ProductDataContext db) =>
+        group.MapPut("/{id}", async (int id, Product product, ProductDataContext db) =>
         {
             var affected = await db.Product
                 .Where(model => model.Id == id)
@@ -52,12 +54,12 @@ public static class ProductEndpoints
         {
             db.Product.Add(product);
             await db.SaveChangesAsync();
-            return Results.Created($"/api/Product/{product.Id}",product);
+            return Results.Created($"/api/Product/{product.Id}", product);
         })
         .WithName("CreateProduct")
         .Produces<Product>(StatusCodes.Status201Created);
 
-        group.MapDelete("/{id}", async  (int id, ProductDataContext db) =>
+        group.MapDelete("/{id}", async (int id, ProductDataContext db) =>
         {
             var affected = await db.Product
                 .Where(model => model.Id == id)
@@ -68,5 +70,42 @@ public static class ProductEndpoints
         .WithName("DeleteProduct")
         .Produces<Product>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
+
+        // New chat endpoint
+        group.MapPost("/chat", async (ChatRequest request, ProductDataContext db, IChatClient chatClient) =>
+        {
+            var products = await db.Product.ToListAsync();
+            var productJson = JsonSerializer.Serialize(products, ProductSerializerContext.Default.ListProduct);
+
+            var systemPrompt = @"You are a TinyShop assistant helping customers find outdoor products.
+Use emojis and HTML with Bootstrap classes in your responses. Please convert any Markdown to HTML. Include product
+images using full URLs like
+https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/product1.png
+and keep them small. Use media cards where possible.
+Products: " + productJson;
+
+            var messages = new List<ChatMessage> { new ChatMessage(ChatRole.System, systemPrompt) };
+            messages.AddRange(request.Messages);
+
+            var response = await chatClient.GetResponseAsync(messages);
+
+            return response?.Message != null
+                ? Results.Ok(new ChatResponse { Message = response.Message.Text })
+                : Results.BadRequest("Failed to generate response");
+        })
+        .WithName("ChatWithProducts")
+        .Produces<ChatResponse>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest);
     }
+}
+
+// DTOs for chat API
+public class ChatRequest
+{
+    public List<ChatMessage> Messages { get; set; } = new();
+}
+
+public class ChatResponse
+{
+    public string? Message { get; set; }
 }

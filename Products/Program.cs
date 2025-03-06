@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
+using OpenAI;
 using Products.Data;
 using Products.Endpoints;
+using System.ClientModel;
 using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,18 @@ builder.AddRedisOutputCache("redis");
 // Add services to the container.
 builder.Services.AddSingleton<RandomFailureMiddleware>();
 
+// Add AI services
+builder.AddOllamaSharpChatClient("phi3");
+
+var credential = new ApiKeyCredential(builder.Configuration["GitHubModels:Token"] ?? throw new InvalidOperationException("Missing configuration: GitHubModels:Token. See the README for details."));
+var openAIOptions = new OpenAIClientOptions()
+{
+	Endpoint = new Uri("https://models.inference.ai.azure.com")
+};
+
+var ghModelsClient = new OpenAIClient(credential, openAIOptions);
+var chatClient = ghModelsClient.AsChatClient("gpt-4o-mini");
+builder.Services.AddChatClient(chatClient);
 
 builder.Services.AddDbContext<ProductDataContext>(options =>
 	options.UseInMemoryDatabase("inmemproducts"));

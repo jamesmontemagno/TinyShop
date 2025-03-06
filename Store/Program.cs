@@ -1,8 +1,5 @@
-using Microsoft.Extensions.AI;
-using OpenAI;
 using Store.Components;
 using Store.Services;
-using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,21 +9,8 @@ builder.Services.AddSingleton<ProductService>();
 builder.Services.AddHttpClient<ProductService>(c =>
 {
     var url = builder.Configuration["ProductEndpoint"] ?? throw new InvalidOperationException("ProductEndpoint is not set");
-
     c.BaseAddress = new(url);
 });
-
-builder.AddOllamaSharpChatClient("phi3");
-
-var credential = new ApiKeyCredential(builder.Configuration["GitHubModels:Token"] ?? throw new InvalidOperationException("Missing configuration: GitHubModels:Token. See the README for details."));
-var openAIOptions = new OpenAIClientOptions()
-{
-    Endpoint = new Uri("https://models.inference.ai.azure.com")
-};
-
-var ghModelsClient = new OpenAIClient(credential, openAIOptions);
-var chatClient = ghModelsClient.AsChatClient("gpt-4o-mini");
-builder.Services.AddChatClient(chatClient);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -48,7 +32,6 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

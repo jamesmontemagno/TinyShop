@@ -7,9 +7,7 @@
     <UserSecretsId>b1262a6b-c327-42d3-931d-b79621ad2c78</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Aspire.OllamaSharp" Version="9.1.0" />
-	<PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="9.3.0-preview.1.25114.11" />
-	<PackageReference Include="Microsoft.Extensions.AI" Version="9.3.0-preview.1.25114.11" />
+    <PackageReference Include="Microsoft.Extensions.AI" Version="9.3.0-preview.1.25114.11" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataEntities\DataEntities.csproj" />
