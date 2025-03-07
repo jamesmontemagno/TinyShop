@@ -1,29 +1,27 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 var redis = builder.AddRedis("redis")
-    .WithRedisCommander()
     .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume("myredisimage")
     .WithPersistence(TimeSpan.FromMinutes(5), 100);
 
-var postgres = builder.AddPostgres("postgres")
-    .WithPgAdmin();
-
-var products = builder.AddProject<Projects.Products>("products")
-    .WithReference(redis)
-    .WaitFor(redis);
+var postgres = builder.AddPostgres("postgres");
 
 var ollama = builder.AddOllama("ollama")
     .WithDataVolume()
-    .WithOpenWebUI();
+    .WithGPUSupport();
 
-var phi3 = ollama.AddModel("phi3", "phi3");
+var chat = ollama.AddModel("chat", "phi3");
+
+var products = builder.AddProject<Projects.Products>("products")
+    .WithReference(redis)
+    .WaitFor(redis)
+    .WithReference(chat)
+    .WaitFor(chat);
 
 builder.AddProject<Projects.Store>("store")
     .WithReference(products)
     .WithExternalHttpEndpoints()
-    .WaitFor(products)
-    .WithReference(ollama)
-    .WaitFor(ollama);
+    .WaitFor(products);
 
 builder.Build().Run();

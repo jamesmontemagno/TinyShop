@@ -22,9 +22,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="9.3.0-preview.1.25114.11" />
+	<PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.3.0-preview.1.25114.11" />
+	<PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="9.3.0-preview.1.25114.11" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="9.3.0-preview.1.25114.11" />
-    <PackageReference Include="CommunityToolkit.Aspire.OllamaSharp" Version="9.1.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.OllamaSharp" Version="9.2.0-preview.1.250226-0510" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataEntities\DataEntities.csproj" />

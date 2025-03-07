@@ -9,6 +9,7 @@ builder.Services.AddSingleton<ProductService>();
 builder.Services.AddHttpClient<ProductService>(c =>
 {
     var url = builder.Configuration["ProductEndpoint"] ?? throw new InvalidOperationException("ProductEndpoint is not set");
+    //c.Timeout = TimeSpan.FromMinutes(2);
     c.BaseAddress = new(url);
 });
 
