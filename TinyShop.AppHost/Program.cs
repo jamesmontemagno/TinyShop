@@ -8,8 +8,7 @@ var redis = builder.AddRedis("redis")
 var postgres = builder.AddPostgres("postgres");
 
 var ollama = builder.AddOllama("ollama")
-    .WithDataVolume()
-    .WithGPUSupport();
+    .WithDataVolume();
 
 var chat = ollama.AddModel("chat", "phi3");
 
