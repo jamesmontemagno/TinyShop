@@ -36,21 +36,3 @@ app.UseStaticFiles();
 app.CreateDbIfNotExists();
 
 app.Run();
-
-[DebuggerStepThrough]
-public class RandomFailureMiddleware : IMiddleware
-{
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        var path = context.Request.Path.Value;
-
-        if (path is null || !path.Contains("api/Product", StringComparison.InvariantCultureIgnoreCase))
-            return next(context);
-
-        if (Random.Shared.NextDouble() >= 1.0)
-        {
-            throw new Exception("Computer says no.");
-        }
-        return next(context);
-    }
-}

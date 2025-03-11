@@ -5,8 +5,6 @@ var redis = builder.AddRedis("redis")
     .WithDataVolume("myredisimage")
     .WithPersistence(TimeSpan.FromMinutes(5), 100);
 
-var postgres = builder.AddPostgres("postgres");
-
 var ollama = builder.AddOllama("ollama")
     .WithDataVolume();
 
