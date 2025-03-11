@@ -7,10 +7,12 @@ namespace Store.Services;
 public class ProductService
 {
     private readonly HttpClient httpClient;
+    private readonly string productEndpoint;
 
-    public ProductService(HttpClient httpClient)
+    public ProductService(HttpClient httpClient, IConfiguration configuration)
     {
         this.httpClient = httpClient;
+        this.productEndpoint = configuration["ProductEndpoint"] ?? throw new InvalidOperationException("ProductEndpoint is not set");
     }
 
     public async Task<List<Product>> GetProducts()
@@ -21,7 +23,7 @@ public class ProductService
 
     public async Task<string> GetProductsJson()
     {
-        var response = await httpClient.GetAsync("/api/Product");
+        var response = await httpClient.GetAsync($"{productEndpoint}/api/Product");
         if (response.IsSuccessStatusCode)
         {
             return await response.Content.ReadAsStringAsync();
@@ -33,7 +35,7 @@ public class ProductService
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync("/api/Product/chat", new { Messages = messages });
+            var response = await httpClient.PostAsJsonAsync($"{productEndpoint}/api/Product/chat", new { Messages = messages });
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<ChatResponse>();

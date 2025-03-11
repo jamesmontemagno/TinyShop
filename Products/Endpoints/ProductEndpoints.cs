@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.VectorData;
 using Products.Data;
+using Products.Services;
 using System.Text.Json;
 
 namespace Products.Endpoints;
@@ -72,7 +74,7 @@ public static class ProductEndpoints
         .Produces(StatusCodes.Status404NotFound);
 
         // New chat endpoint
-        group.MapPost("/chat", async (ChatRequest request, ProductDataContext db, IChatClient chatClient) =>
+        group.MapPost("/chat", async (ChatRequest request, ProductDataContext db, IChatClient chatClient, SemanticSearch semanticSearch) =>
         {
             var products = await db.Product.ToListAsync();
             var productJson = JsonSerializer.Serialize(products, ProductSerializerContext.Default.ListProduct);
@@ -89,9 +91,27 @@ public static class ProductEndpoints
 
             var response = await chatClient.GetResponseAsync(messages);
 
-            return response?.Message != null
-                ? Results.Ok(new ChatResponse { Message = response.Message.Text })
-                : Results.BadRequest("Failed to generate response");
+            if (response?.Message != null)
+            {
+                var lastMessageText = request.Messages.LastOrDefault()?.Text;
+                if (string.IsNullOrEmpty(lastMessageText))
+                {
+                    return Results.BadRequest("Invalid request: No message text provided.");
+                }
+
+                var searchResults = await semanticSearch.SearchAsync(lastMessageText, null, 5);
+                var responseMessage = response.Message.Text;
+
+                foreach (var result in searchResults)
+                {
+                    var pdfLink = $"<a href='https://localhost:7130/data/{result.FileName}' class='btn btn-primary' target='_blank'><i class='bi bi-file-earmark-pdf'></i> {result.FileName}</a>";
+                    responseMessage += $"<br/><br/>{result.Text} {pdfLink}";
+                }
+
+                return Results.Ok(new ChatResponse { Message = responseMessage });
+            }
+
+            return Results.BadRequest("Failed to generate response");
         })
         .WithName("ChatWithProducts")
         .Produces<ChatResponse>(StatusCodes.Status200OK)
