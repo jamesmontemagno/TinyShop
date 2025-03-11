@@ -13,9 +13,6 @@ builder.AddServiceDefaults();
 
 builder.AddRedisOutputCache("redis");
 
-//builder.AddOllamaApiClient("chat")
-//    .AddChatClient();
-
 var credential = new ApiKeyCredential(builder.Configuration["GitHubModels:Token"]!);
 var openAIOptions = new OpenAIClientOptions()
 {

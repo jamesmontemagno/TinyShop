@@ -1,23 +1,16 @@
-var credential = new ApiKeyCredential(builder.Configuration["GitHubModels:Token"]!);
-var openAIOptions = new OpenAIClientOptions()
-{
-    Endpoint = new Uri("https://models.inference.ai.azure.com")
-};
 
-var ghModelsClient = new OpenAIClient(credential, openAIOptions);
-var chatClient = ghModelsClient.AsChatClient("gpt-4o-mini");
-builder.Services.AddSingleton(chatClient);
+            messages.Add(new ChatMessage(ChatRole.System, systemPrompt));
 
----
+            messages.AddRange(request.Messages);
 
-var ollama = builder.AddOllama("ollama")
-    .WithGPUSupport()
-    .WithDataVolume();
+            var response = await chatClient.GetResponseAsync(messages);
 
-var chat = ollama.AddModel("chat", "phi3");
 
----
-
-builder.AddOllamaApiClient("chat")
-    .AddChatClient();
-
+ var products = await db.Product.ToListAsync();
+ var productJson = JsonSerializer.Serialize(products, ProductSerializerContext.Default.ListProduct);
+ systemPrompt = @"You are a TinyShop assistant helping customers find outdoor products.
+ Use emojis and HTML with Bootstrap classes in your responses. Please convert any Markdown to HTML. Include product
+ images using full URLs like
+ https://raw.githubusercontent.com/MicrosoftDocs/mslearn-dotnet-cloudnative/main/dotnet-docker/Products/wwwroot/images/product1.png
+ and keep them small. Use media cards where possible.
+ Products: " + productJson;
