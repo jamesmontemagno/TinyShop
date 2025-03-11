@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataEntities\DataEntities.csproj" />
+    <ProjectReference Include="..\TinyShop.ServiceDefaults\TinyShop.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>
