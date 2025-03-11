@@ -1,4 +1,23 @@
-dotnet run --publisher manifest --output-path aspire-manifest.json
+var credential = new ApiKeyCredential(builder.Configuration["GitHubModels:Token"]!);
+var openAIOptions = new OpenAIClientOptions()
+{
+    Endpoint = new Uri("https://models.inference.ai.azure.com")
+};
 
-azd initi
-azd infra synth
+var ghModelsClient = new OpenAIClient(credential, openAIOptions);
+var chatClient = ghModelsClient.AsChatClient("gpt-4o-mini");
+builder.Services.AddSingleton(chatClient);
+
+---
+
+var ollama = builder.AddOllama("ollama")
+    .WithGPUSupport()
+    .WithDataVolume();
+
+var chat = ollama.AddModel("chat", "phi3");
+
+---
+
+builder.AddOllamaApiClient("chat")
+    .AddChatClient();
+

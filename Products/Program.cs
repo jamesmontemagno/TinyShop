@@ -13,8 +13,18 @@ builder.AddServiceDefaults();
 
 builder.AddRedisOutputCache("redis");
 
-builder.AddOllamaApiClient("chat")
-    .AddChatClient();
+//builder.AddOllamaApiClient("chat")
+//    .AddChatClient();
+
+var credential = new ApiKeyCredential(builder.Configuration["GitHubModels:Token"]!);
+var openAIOptions = new OpenAIClientOptions()
+{
+    Endpoint = new Uri("https://models.inference.ai.azure.com")
+};
+
+var ghModelsClient = new OpenAIClient(credential, openAIOptions);
+var chatClient = ghModelsClient.AsChatClient("gpt-4o-mini");
+builder.Services.AddSingleton(chatClient);
 
 builder.Services.AddDbContext<ProductDataContext>(options =>
     options.UseInMemoryDatabase("inmemproducts"));
